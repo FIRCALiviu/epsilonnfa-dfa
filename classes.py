@@ -1,5 +1,6 @@
+import queue
 class graf:
-    def __init__(self,initial_state,final_states,states,d=None):
+    def __init__(self,initial_state,final_states,states:list,d=None):
         if d is None:
             self.delta=dict()
             self.initial_state=initial_state
@@ -52,7 +53,7 @@ class graf:
         return final_res
     
     def __str__(self):
-        return str(self.delta)
+        return str(self.delta)+'\n Final states:\n'+str(self.final_states)+'\n Initial_state:\n'+str(self.initial_state)
     def add(self,s,simbol,new):
         if self.delta.get(s) is not None:
             if self.delta[s].get(simbol) is not None:
@@ -72,14 +73,56 @@ class graf:
                     alfabet|=set([letter])
         alfabet=list(alfabet)
         
-        M=[]
-        for state in self.states:
-            M.append([None]*len(alfabet))
-        for i,state in enumerate(self.states):
-            for j,value in enumerate(alfabet):
-                M[i][j]=self.super_choose(state,value),state,value
-        for line in M:
-            print(*line)
+        M={}
+        
+        for letter in alfabet:
+            
+            for state in self.states:
+                if M.get(letter) is None:
+                    M[letter]={}
+                    
+                    M[letter]={state:self.super_choose(state,letter)}
+                    
+                else:
+                    
+                    if M[letter].get(state) is None:
+                        M[letter][state]=self.super_choose(state,letter)
+                    else:
+                        raise RuntimeError
+        new_states=set()
+        initial_state=self.closure(self.initial_state)
+        new_states.add(frozenset(initial_state))
+        delta=dict()
+        q=queue.Queue()
+        q.put(frozenset(initial_state))
+        while not q.empty():
+            states=q.get()
+            for letter in alfabet:
+                value=set()
+                for state in states:
+                    value|=M[letter][state]
+                
+                value=frozenset(value)
+                if value in new_states:
+                    if delta.get(states) is None:
+                        delta[states]={letter:value}
+                    else:
+                        delta[states][letter]=value
+                else:
+                    new_states.add(value)
+                    q.put(value)  
+                    if delta.get(states) is None:
+                        delta[states]={letter:value}
+                    else:
+                        delta[states][letter]=value   
+        new_final_states=set()
+        for states in new_states:
+            for state in states:
+                if state in self.final_states:
+                    new_final_states.add(states)
+                    break
+        return graf(self.closure(self.initial_state),new_final_states,list(new_states),delta)
+
 
                 
 

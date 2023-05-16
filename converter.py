@@ -9,4 +9,4 @@ for line in lines:
     g.add(*line.split())
 
 
-g.get_dfa()
+print(g.get_dfa())
