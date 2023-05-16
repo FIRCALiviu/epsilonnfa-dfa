@@ -148,3 +148,10 @@ class visualizer:
                 for letter in self.dfa.delta[state]:
                     visual.edge(" ".join([i for i in state])," ".join([i for i in self.dfa.delta[state][letter]]),label=letter)
             visual.render("DFA",view=True)
+        else:
+            temp=self.dfa
+            self.dfa=DFA
+            self.show()
+            self.dfa=temp
+    
+        
