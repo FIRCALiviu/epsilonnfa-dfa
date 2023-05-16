@@ -1,6 +1,7 @@
 import queue
+import graphviz
 class graf:
-    def __init__(self,initial_state,final_states,states:list,d=None):
+    def __init__(self,initial_state,final_states,states,d=None):
         if d is None:
             self.delta=dict()
             self.initial_state=initial_state
@@ -125,4 +126,25 @@ class graf:
 
 
                 
+class visualizer:
+    def __init__(self,dfa):
+        self.dfa=dfa
 
+    def show(self,DFA=None):
+        visual=graphviz.Digraph()
+        if DFA is None:
+            for state in self.dfa.states:
+                if state in self.dfa.final_states:
+                    visual.attr("node",shape='doublecircle')
+                    visual.node(" ".join([i for i in state]))
+                else:
+                    visual.attr("node",shape='circle')
+                    visual.node(" ".join([i for i in state]))
+            visual.attr('node',shape='none')
+            visual.node("start")
+            visual.edge("start"," ".join([i for i in self.dfa.initial_state]))
+
+            for state in self.dfa.delta:
+                for letter in self.dfa.delta[state]:
+                    visual.edge(" ".join([i for i in state])," ".join([i for i in self.dfa.delta[state][letter]]),label=letter)
+            visual.render("DFA",view=True)
