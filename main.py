@@ -1,6 +1,6 @@
 import classes
 def main():
-    filename=input("Please enter filename:\n")
+    filename=input("Please enter the filename:\n")
     file = open(filename)
 
     g=classes.graf(file.readline().strip(),file.readline().split(),file.readline().split())
